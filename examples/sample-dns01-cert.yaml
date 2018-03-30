@@ -1,0 +1,18 @@
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: echoserver-manual-tls
+  namespace: echoheaders
+spec:
+  secretName: echoserver-manual-tls
+  issuerRef:
+    name: letsencrypt-staging
+    kind: ClusterIssuer
+  dnsNames:
+  - echoserver.example.com
+  acme:
+    config:
+    - dns01:
+        provider: route53
+      domains:
+      - echoserver.example.com

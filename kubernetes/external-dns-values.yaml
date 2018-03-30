@@ -1,0 +1,12 @@
+sources:
+  - ingress
+publishInternalServices: true
+aws:
+  secretKey: "***REMOVED***"
+  accessKey: "***REMOVED***"
+  region: "eu-central"
+domainFilters:
+  - example.com
+logLevel: debug
+extraArgs:
+  txt-prefix: txt_

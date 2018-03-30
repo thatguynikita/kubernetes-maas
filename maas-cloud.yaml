@@ -1,0 +1,11 @@
+clouds:
+  maas-cloud:
+    type: maas
+    description: Metal As A Service
+    auth-types: [oauth1]
+    endpoint: http://<< Set IP or DNS address of your MAAS >>/MAAS/api/2.0
+credentials:
+  maas-cloud:
+    admin:
+      auth-type: oauth1
+      maas-oauth: << Put your MAAS API key here >>

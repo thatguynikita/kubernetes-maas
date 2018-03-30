@@ -1,0 +1,232 @@
+series: xenial
+description: Kubernetes cluster, appropriate for production. Includes three-machine etcd and ceph cluster, two Kubernetes masters, five workers and monitoring with Graylog and Prometheus.
+services:
+  # Kubernetes related applications
+  easyrsa:
+    annotations:
+      gui-x: '420'
+      gui-y: '550'
+    charm: cs:~containers/easyrsa-33
+    num_units: 1
+    to:
+    - 0
+  etcd:
+    annotations:
+      gui-x: '830'
+      gui-y: '330'
+    charm: cs:~containers/etcd-74
+    num_units: 3
+    to:
+    - lxd:3
+    - lxd:4
+    - lxd:5
+  flannel:
+    annotations:
+      gui-x: '450'
+      gui-y: '750'
+    charm: cs:~containers/flannel-50
+  kubeapi-load-balancer:
+    annotations:
+      gui-x: '420'
+      gui-y: '330'
+    charm: cs:~containers/kubeapi-load-balancer-55
+    expose: true
+    num_units: 1
+    to:
+    - 0
+  kubernetes-master:
+    annotations:
+      gui-x: '830'
+      gui-y: '860'
+    charm: cs:~containers/kubernetes-master-97
+    num_units: 2
+    options:
+      channel: 1.9/stable
+      allow-privileged: "true"
+      enable-dashboard-addons: "false"
+    to:
+    - lxd:1
+    - lxd:2
+  kubernetes-worker:
+    annotations:
+      gui-x: '30'
+      gui-y: '860'
+    charm: cs:~containers/kubernetes-worker-106
+    constraints: cores=4 mem=4G
+    expose: true
+    num_units: 5
+    to:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    options:
+      channel: 1.9/stable
+      allow-privileged: "true"
+      ingress: "false"
+  # Storage related applications
+  ceph-mon:
+    annotations:
+      gui-x: '1120'
+      gui-y: '870'
+    charm: cs:ceph-mon-23
+    num_units: 3
+    options:
+      expected-osd-count: 3
+      source: cloud:xenial-queens
+    to:
+    - lxd:3
+    - lxd:4
+    - lxd:5
+  ceph-osd:
+    annotations:
+      gui-x: '1120'
+      gui-y: '1150'
+    charm: cs:ceph-osd-257
+    num_units: 3
+    options:
+      osd-devices: /dev/sdb
+      osd-reformat: "yes"
+      source: cloud:xenial-queens
+    to:
+    - 3
+    - 4
+    - 5
+  # Graylog-related applications
+  apache2:
+    annotations:
+      gui-x: '420'
+      gui-y: '1630'
+    charm: cs:apache2-24
+    expose: true
+    num_units: 1
+    options:
+      enable_modules: "headers proxy_html proxy_http"
+    to:
+    - lxd:0
+  elasticsearch:
+    annotations:
+      gui-x: '830'
+      gui-y: '1330'
+    charm: cs:elasticsearch-26
+    num_units: 1
+    options:
+      firewall_enabled: "false"
+    to:
+    - lxd:0
+  filebeat:
+    annotations:
+      gui-x: '450'
+      gui-y: '1070'
+    charm: cs:filebeat-12
+    options:
+      logpath: "/var/log/*.log /var/log/containers/*.log"
+      kube_logs: "true"
+  graylog:
+    annotations:
+      gui-x: '420'
+      gui-y: '1330'
+    charm: cs:graylog-12
+    num_units: 1
+    to:
+    - lxd:0
+  mongodb:
+    annotations:
+      gui-x: '20'
+      gui-y: '1330'
+    charm: cs:mongodb-46
+    num_units: 1
+    to:
+    - lxd:0
+  # Prometheus-related applications
+  grafana:
+    annotations:
+      gui-x: '-240'
+      gui-y: '330'
+    charm: cs:grafana-7
+    expose: true
+    num_units: 1
+    to:
+    - lxd:0
+  prometheus:
+    annotations:
+      gui-x: '-240'
+      gui-y: '590'
+    charm: cs:prometheus-5
+    num_units: 1
+    to:
+    - lxd:0
+  telegraf:
+    annotations:
+      gui-x: '60'
+      gui-y: '330'
+    charm: cs:telegraf-9
+relations:
+- - kubernetes-master:kube-api-endpoint
+  - kubeapi-load-balancer:apiserver
+- - kubernetes-master:loadbalancer
+  - kubeapi-load-balancer:loadbalancer
+- - kubernetes-master:kube-control
+  - kubernetes-worker:kube-control
+- - kubernetes-master:certificates
+  - easyrsa:client
+- - etcd:certificates
+  - easyrsa:client
+- - kubernetes-master:etcd
+  - etcd:db
+- - kubernetes-worker:certificates
+  - easyrsa:client
+- - kubernetes-worker:kube-api-endpoint
+  - kubeapi-load-balancer:website
+- - kubeapi-load-balancer:certificates
+  - easyrsa:client
+- - flannel:etcd
+  - etcd:db
+- - flannel:cni
+  - kubernetes-master:cni
+- - flannel:cni
+  - kubernetes-worker:cni
+- - ceph-osd:mon
+  - ceph-mon:osd
+- - kubernetes-master:ceph-storage
+  - ceph-mon:admin
+- - apache2:reverseproxy
+  - graylog:website
+- - graylog:elasticsearch
+  - elasticsearch:client
+- - graylog:mongodb
+  - mongodb:database
+- - filebeat:beats-host
+  - kubernetes-master:juju-info
+- - filebeat:beats-host
+  - kubernetes-worker:juju-info
+- - filebeat:logstash
+  - graylog:beats
+- - prometheus:grafana-source
+  - grafana:grafana-source
+- - telegraf:prometheus-client
+  - prometheus:target
+- - kubernetes-master:juju-info
+  - telegraf:juju-info
+- - kubernetes-worker:juju-info
+  - telegraf:juju-info
+machines:
+  0:
+    constraints: tags=monitoring
+    series: xenial
+  1:
+    constraints: tags=kube-master
+    series: xenial
+  2:
+    constraints: tags=kube-master
+    series: xenial
+  3:
+    constraints: tags=ceph
+    series: xenial
+  4:
+    constraints: tags=ceph
+    series: xenial
+  5:
+    constraints: tags=ceph
+    series: xenial

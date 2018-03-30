@@ -1,0 +1,5 @@
+## custom values
+rbac:
+  create: false
+ingressShim:
+  extraArgs: [--default-issuer-name=letsencrypt-staging,--default-issuer-kind=ClusterIssuer]

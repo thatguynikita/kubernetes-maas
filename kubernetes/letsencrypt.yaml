@@ -1,0 +1,51 @@
+---
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-staging
+spec:
+  acme:
+    server: https://acme-staging.api.letsencrypt.org/directory
+    email: admin@example.com
+    privateKeySecretRef:
+      name: letsencrypt-staging
+    http01: {}
+    dns01:
+      providers:
+      - name: route53
+        route53:
+          accessKeyID: ***REMOVED***
+          secretAccessKeySecretRef:
+            name: external-dns
+            key: aws_secret_access_key
+          region: eu-central-1
+---
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    server: https://acme-v01.api.letsencrypt.org/directory
+    email: admin@example.com
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    http01: {}
+    dns01:
+      providers:
+      - name: route53
+        route53:
+          accessKeyID: ***REMOVED***
+          secretAccessKeySecretRef:
+            name: external-dns
+            key: aws_secret_access_key
+          region: eu-central-1
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: route53-config
+  namespace: kube-system
+type: Opaque
+data:
+  secret-access-key: ***REMOVED***

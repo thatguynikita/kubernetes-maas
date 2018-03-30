@@ -1,0 +1,13 @@
+## nginx custom config
+controller:
+  service:
+    externalIPs: ["<< Your external load balancer IP >>"]
+    type: NodePort
+    nodePorts:
+      http: 30080
+      https: 30443
+  podAnnotations: 
+    external-dns.alpha.kubernetes.io/hostname: k8s.example.com
+  publishService:
+    enabled: true
+    pathOverride: "kube-system/nginx-ingress-controller"
