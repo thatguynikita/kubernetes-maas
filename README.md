@@ -1,7 +1,8 @@
 # Canonical Kubernetes on MAAS
 ##
 
-##Table of Contents
+Contents
+--------
 
   * [Description](#markdown-header-description)
   * [Requirements](#markdown-header-requirements)
