@@ -1,27 +1,25 @@
 # Canonical Kubernetes on MAAS
 ##
 
-Table of Contents
-=================
+##Table of Contents
 
-* [Canonical Kubernetes on MAAS](#canonical-kubernetes-on-maas)
-  * [Description](#description)
-  * [Requirements](#requirements)
-  * [Pre\-installation](#pre-installation)
-    * [Prepare your MAAS](#prepare-your-maas)
-    * [Install required tools](#install-required-tools)
-    * [Clone this repo](#clone-this-repo)
-  * [Installation](#installation)
-    * [Bootstrap Juju controller](#bootstrap-juju-controller)
-    * [Deploy bundle](#deploy-bundle)
-    * [Update LXD profiles](#update-lxd-profiles)
-    * [Create RBD pool in Ceph](#create-rbd-pool-in-ceph)
-    * [Apply additional configuration to master and worker charms](#apply-additional-configuration-to-master-and-worker-charms)
-    * [Setup monitoring applications](#setup-monitoring-applications)
-  * [Post\-installation](#post-installation)
-    * [Update HAproxy endpoints in pfSense](#update-haproxy-endpoints-in-pfsense)
-    * [Kubernetes cluster setup](#kubernetes-cluster-setup)
-  * [Useful links](#useful-links)
+  * [Description](#markdown-header-description)
+  * [Requirements](#markdown-header-requirements)
+  * [Pre\-installation](#markdown-header-pre-installation)
+    * [Prepare your MAAS](#markdown-header-prepare-your-maas)
+    * [Install required tools](#markdown-header-install-required-tools)
+    * [Clone this repo](#markdown-header-clone-this-repo)
+  * [Installation](#markdown-header-installation)
+    * [Bootstrap Juju controller](#markdown-header-bootstrap-juju-controller)
+    * [Deploy bundle](#markdown-header-deploy-bundle)
+    * [Update LXD profiles](#markdown-header-update-lxd-profiles)
+    * [Create RBD pool in Ceph](#markdown-header-create-rbd-pool-in-ceph)
+    * [Apply additional configuration to master and worker charms](#markdown-header-apply-additional-configuration-to-master-and-worker-charms)
+    * [Setup monitoring applications](#markdown-header-setup-monitoring-applications)
+  * [Post\-installation](#markdown-header-post-installation)
+    * [Update HAproxy endpoints in pfSense](#markdown-header-update-haproxy-endpoints-in-pfsense)
+    * [Kubernetes cluster setup](#markdown-header-kubernetes-cluster-setup)
+  * [Useful links](#markdown-header-useful-links)
 
 
 ## Description
