@@ -1,9 +1,33 @@
 # Canonical Kubernetes on MAAS
 ##
+
+Table of Contents
+=================
+
+* [Canonical Kubernetes on MAAS](#canonical-kubernetes-on-maas)
+  * [Description](#description)
+  * [Requirements](#requirements)
+  * [Pre\-installation](#pre-installation)
+    * [Prepare your MAAS](#prepare-your-maas)
+    * [Install required tools](#install-required-tools)
+    * [Clone this repo](#clone-this-repo)
+  * [Installation](#installation)
+    * [Bootstrap Juju controller](#bootstrap-juju-controller)
+    * [Deploy bundle](#deploy-bundle)
+    * [Update LXD profiles](#update-lxd-profiles)
+    * [Create RBD pool in Ceph](#create-rbd-pool-in-ceph)
+    * [Apply additional configuration to master and worker charms](#apply-additional-configuration-to-master-and-worker-charms)
+    * [Setup monitoring applications](#setup-monitoring-applications)
+  * [Post\-installation](#post-installation)
+    * [Update HAproxy endpoints in pfSense](#update-haproxy-endpoints-in-pfsense)
+    * [Kubernetes cluster setup](#kubernetes-cluster-setup)
+  * [Useful links](#useful-links)
+
+
 ## Description
 This document describes how to deploy Canonical Kubernetes cluster with Ceph storage and monitoring with Graylog/Prometheus using Juju into existing MAAS infrastructure. Cluster is designed for High Availability and includes three-machine etcd and three-machine ceph cluster, two Kubernetes masters with a loadbalancer and five Kubernetes workers.
 
-![Bundle overview](images/bundle.png)
+![Bundle overview](images/bundle.png) 
 
 MAAS in our setup is behind reverse-proxy in private network and will be exposed into public by use of HAProxy plugin for pfSense.
 
@@ -95,12 +119,12 @@ juju config kubeapi-load-balancer extra_sans=<< Your Kubernetes API URL >>
 juju config kubernetes-master api-extra-args="admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeLabel,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota"
 ```
 ### Setup monitoring applications
-WIP. 
-
-But most probably this is gonna be a rip-off from https://github.com/CalvinHartwell/canonical-kubernetes-demos/tree/master/cdk-logging-and-monitoring
-
-Skip for now.
-
+Head into *monitoring* directory and run
+```
+chmod 700 config.sh
+./config.sh
+```
+The script applies all necessary configurations to Prometheus/Grafana as well as Graylog. On completion it reports information about Web UI endpoints and how to get passwords to access those endpoints. Make sure to write them down.
 ## Post-installation
 ### Update HAproxy endpoints in pfSense
 This task assumes that you use pfSense with HAProxy for managing routing. Main idea is to forward our API and worker endpoints to listen on a specified publicly available IP.
@@ -109,8 +133,6 @@ Get all the necessary backend endpoints:
 ```
 echo API loadbalancer:; juju status | awk '$1 ~ /kubeapi-load-balancer\// {print $5,$6}'
 echo Kubernetes workers:; juju status | awk '$1 ~ /kubernetes-worker\// {print $5,$6}'
-#echo Grafana:;
-#echo Graylog:;
 ```
 Go to your pfSense web interface, navigate to `Services` -> `HAProxy` -> `Backend` and update *KubernetesAPI*, *KubernetesWorkers80* and *KubernetesWorkers443* entries in accordance with obtained endpoints.
 
