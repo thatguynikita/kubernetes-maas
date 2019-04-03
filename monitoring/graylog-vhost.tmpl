@@ -1,5 +1,5 @@
 <Location "/">
-    RequestHeader set X-Graylog-Server-URL "http://{{servername}}/api/"
+    RequestHeader set X-Graylog-Server-URL "http://graylog.example.com/api/"
     ProxyPass http://{{graylog_web}}/
     ProxyPassReverse http://{{graylog_web}}/
 </Location>

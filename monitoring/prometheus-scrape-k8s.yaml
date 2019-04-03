@@ -1,3 +1,8 @@
+- job_name: 'ceph_cluster'
+  static_configs:
+    - targets: ['10.6.40.227:9283','10.6.40.236:9283','10.6.40.5:9283']
+      labels:
+        instance: "ceph_cluster"
 - job_name: 'k8s-api-endpoints'
   kubernetes_sd_configs:
   - api_server: K8S_API_ENDPOINT
