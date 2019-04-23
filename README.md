@@ -1,5 +1,4 @@
 # Canonical Kubernetes on MAAS
-##
 
 Contents
 --------
